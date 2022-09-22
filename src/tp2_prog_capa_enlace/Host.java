@@ -19,16 +19,28 @@ public class Host {
 
     public SerialPort port;
 
+    public boolean blockTransmission = false;
+
     public Host(SerialPort port) {
         this.port = port;
     }
 
     public void EnterTransmissionMode(OutputStream outputStream, Scanner scanner) {
+        port.addDataListener(new TransmitterEventListener(port, this));
         while (true) {
             System.out.println("A continuación, tipee un mensaje a enviar");
             String payload = scanner.nextLine();
             try {
                 outputStream.write(payload.getBytes());
+                blockTransmission = true;
+                System.out.println("Esperando ack...");
+                while(true){
+                    if(blockTransmission == false){
+                        System.out.println("ack recibido");
+                        break;
+                    }
+                    System.out.println("block t" + blockTransmission);
+                }
                 if (payload.equalsIgnoreCase("exit")) {
                     port.closePort();
                     break;
