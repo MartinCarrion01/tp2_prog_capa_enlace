@@ -40,23 +40,6 @@ public class Host {
     }
 
     public void EnterReceptionMode() {
-        port.addDataListener(new SerialPortDataListener() {
-            @Override
-            public int getListeningEvents() {
-                return SerialPort.LISTENING_EVENT_DATA_RECEIVED;
-            }
-
-            @Override
-            public void serialEvent(SerialPortEvent event) {
-                byte[] newData = event.getReceivedData();
-                System.out.println("Se recibio un mensaje de: " + newData.length);
-                String mensaje = new String(newData);
-                System.out.println("Mensaje recibido: " + mensaje);
-                if (mensaje.equalsIgnoreCase("exit")) {
-                    System.out.println("El emisor ha terminado la comunicacion, cerrando...");
-                    port.closePort();
-                }
-            }
-        });
+        port.addDataListener(new ReceiverEventListener(port, this));
     }
 }
