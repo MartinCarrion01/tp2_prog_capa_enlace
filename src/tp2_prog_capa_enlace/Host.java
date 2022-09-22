@@ -50,13 +50,10 @@ public class Host {
             public void serialEvent(SerialPortEvent event) {
                 byte[] newData = event.getReceivedData();
                 System.out.println("Se recibio un mensaje de: " + newData.length);
-                //for (int i = 0; i < newData.length; ++i) {
-                //    System.out.print((char) newData[i]);
-                //}
                 String mensaje = new String(newData);
                 System.out.println("Mensaje recibido: " + mensaje);
                 if (mensaje.equalsIgnoreCase("exit")) {
-                    System.out.println("cerrando...");
+                    System.out.println("El emisor ha terminado la comunicacion, cerrando...");
                     port.closePort();
                 }
             }
