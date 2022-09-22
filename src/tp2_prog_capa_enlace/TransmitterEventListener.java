@@ -29,9 +29,8 @@ public class TransmitterEventListener extends AbstractEventListener implements S
     public void serialEvent(SerialPortEvent event) {
         byte[] newData = event.getReceivedData();
         String mensaje = new String(newData);
-        System.out.println("Mensaje recibido: " + mensaje);
         if (mensaje.equalsIgnoreCase("ack")) {
-            host.blockTransmission = false;
+            host.blockTransmission.set(false);
         }
     }
 }

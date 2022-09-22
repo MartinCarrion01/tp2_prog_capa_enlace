@@ -2,9 +2,6 @@
 tp2_prog_capa_enlace.SerialPortBuilder
 com.fazecast.jSerialComm.SerialPort
 java.lang.Object
-||:tp2_prog_capa_enlace.AbstractEventListener
-tp2_prog_capa_enlace.AbstractEventListener
-java.lang.Object
 ||:tp2_prog_capa_enlace.ReceiverEventListener
 java.io.OutputStream
 java.io.PrintStream
@@ -20,6 +17,9 @@ com.fazecast.jSerialComm.SerialPortEvent
 com.fazecast.jSerialComm.SerialPort
 java.lang.String
 java.lang.invoke.StringConcatFactory
+||:tp2_prog_capa_enlace.AbstractEventListener
+tp2_prog_capa_enlace.AbstractEventListener
+java.lang.Object
 ||:tp2_prog_capa_enlace.Host
 java.io.PrintStream
 java.io.OutputStream

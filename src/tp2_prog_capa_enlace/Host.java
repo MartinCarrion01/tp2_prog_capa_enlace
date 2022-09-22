@@ -10,6 +10,7 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -19,7 +20,7 @@ public class Host {
 
     public SerialPort port;
 
-    public boolean blockTransmission = false;
+    public final AtomicBoolean blockTransmission = new AtomicBoolean(false);
 
     public Host(SerialPort port) {
         this.port = port;
@@ -32,14 +33,13 @@ public class Host {
             String payload = scanner.nextLine();
             try {
                 outputStream.write(payload.getBytes());
-                blockTransmission = true;
+                blockTransmission.set(true);
                 System.out.println("Esperando ack...");
                 while(true){
-                    if(blockTransmission == false){
+                    if(!blockTransmission.get()){
                         System.out.println("ack recibido");
                         break;
                     }
-                    System.out.println("block t" + blockTransmission);
                 }
                 if (payload.equalsIgnoreCase("exit")) {
                     port.closePort();
