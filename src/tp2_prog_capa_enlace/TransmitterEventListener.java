@@ -14,10 +14,15 @@ import java.io.OutputStream;
  *
  * @author marti
  */
-public class TransmitterEventListener extends AbstractEventListener implements SerialPortDataListener {
+public class TransmitterEventListener implements SerialPortDataListener {
+
+    public SerialPort port;
+
+    public Host host;
 
     public TransmitterEventListener(SerialPort port, Host host) {
-        super(port, host);
+        this.port = port;
+        this.host = host;
     }
 
     @Override
