@@ -5,8 +5,6 @@
 package tp2_prog_capa_enlace;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortDataListener;
-import com.fazecast.jSerialComm.SerialPortEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Scanner;
@@ -35,8 +33,8 @@ public class Host {
                 outputStream.write(payload.getBytes());
                 blockTransmission.set(true);
                 System.out.println("Esperando ack...");
-                while(true){
-                    if(!blockTransmission.get()){
+                while (true) {
+                    if (!blockTransmission.get()) {
                         System.out.println("ack recibido");
                         break;
                     }
@@ -52,6 +50,6 @@ public class Host {
     }
 
     public void EnterReceptionMode() {
-        port.addDataListener(new ReceiverEventListener(port, this));
+        port.addDataListener(new ReceiverEventListener(port));
     }
 }

@@ -7,9 +7,6 @@ package tp2_prog_capa_enlace;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  *
  * @author marti
