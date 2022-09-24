@@ -28,9 +28,12 @@ public class Host {
         port.addDataListener(new TransmitterEventListener(port, this));
         while (true) {
             System.out.println("A continuación, tipee un mensaje a enviar");
-            String payload = scanner.nextLine();
+            String message = scanner.nextLine();
+            
+            Frame frame = new Frame(message);//se realiza entramado
+            
             try {
-                outputStream.write(payload.getBytes());
+                outputStream.write(frame.toBytes());
                 blockTransmission.set(true);
                 System.out.println("Esperando ack...");
                 while (true) {
@@ -39,7 +42,7 @@ public class Host {
                         break;
                     }
                 }
-                if (payload.equalsIgnoreCase("exit")) {
+                if (message.equalsIgnoreCase("exit")) {
                     port.closePort();
                     break;
                 }

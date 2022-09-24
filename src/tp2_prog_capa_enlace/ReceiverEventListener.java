@@ -9,6 +9,10 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import static tp2_prog_capa_enlace.Frame.ESCAPE;
+import static tp2_prog_capa_enlace.Frame.FLAG;
 
 /**
  *
@@ -30,11 +34,14 @@ public class ReceiverEventListener implements SerialPortDataListener {
     @Override
     public void serialEvent(SerialPortEvent event) {
         byte[] newData = event.getReceivedData();
+        String decodedMessage = decodeMessage(newData);
+        
+        
         System.out.println("Se recibio un mensaje de: " + newData.length);
-        String mensaje = new String(newData);
-        System.out.println("Mensaje recibido: " + mensaje);
+        
+        System.out.println("Mensaje recibido: " + decodedMessage);
         this.sendAck();
-        if (mensaje.equalsIgnoreCase("exit")) {
+        if (decodedMessage.equalsIgnoreCase("exit")) {
             System.out.println("El emisor ha terminado la comunicacion, cerrando...");
             port.closePort();
         }
@@ -47,5 +54,33 @@ public class ReceiverEventListener implements SerialPortDataListener {
         } catch (IOException e) {
             System.out.println("Ocurrió un error: " + e.getMessage());
         }
+    }
+
+    private String decodeMessage(byte[] newData) {
+        
+        String frame = new String(newData);
+        
+        
+        char[] characters = frame.toCharArray();
+        List<Character> stuffedMessage = new ArrayList<>();
+        for (int i = 0; i < frame.length(); i++) { 
+            
+            char character = characters[i];
+           
+            if (!(character == ESCAPE && (characters[i+1] == FLAG || characters[i+1] == ESCAPE))) {
+                stuffedMessage.add(character);
+            }
+            
+        }
+        
+        StringBuilder sb = new StringBuilder();
+ 
+        for (Character ch : stuffedMessage) {
+            sb.append(ch);
+        }
+ 
+        return sb.toString();
+        
+    
     }
 }
