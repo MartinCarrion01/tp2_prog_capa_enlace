@@ -29,12 +29,12 @@ public class Host {
         while (true) {
             System.out.println("A continuación, tipee un mensaje a enviar");
             String message = scanner.nextLine();
-            
-            Frame frame = new Frame(message);//se realiza entramado
-            
+            Frame frameToSend = new Frame(message);//se realiza entramado 
             try {
-                outputStream.write(frame.toBytes());
+                outputStream.write(frameToSend.frameToBytes());
                 blockTransmission.set(true);
+                System.out.println("Trama enviada: ");
+                frameToSend.printFrame();
                 System.out.println("Esperando ack...");
                 while (true) {
                     if (!blockTransmission.get()) {
@@ -42,7 +42,7 @@ public class Host {
                         break;
                     }
                 }
-                if (message.equalsIgnoreCase("exit")) {
+                if (new String(frameToSend.payload).equalsIgnoreCase("exit")) {
                     port.closePort();
                     break;
                 }

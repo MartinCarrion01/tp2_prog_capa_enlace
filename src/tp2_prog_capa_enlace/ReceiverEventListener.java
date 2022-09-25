@@ -34,11 +34,10 @@ public class ReceiverEventListener implements SerialPortDataListener {
     @Override
     public void serialEvent(SerialPortEvent event) {
         byte[] newData = event.getReceivedData();
-        String decodedMessage = decodeMessage(newData);
-        
-        
-        System.out.println("Se recibio un mensaje de: " + newData.length);
-        
+        Frame receivedFrame = Frame.rawDataAsFrame(newData);
+        System.out.println("Trama recibida: ");
+        receivedFrame.printFrame();
+        String decodedMessage = receivedFrame.decodeMessage();
         System.out.println("Mensaje recibido: " + decodedMessage);
         this.sendAck();
         if (decodedMessage.equalsIgnoreCase("exit")) {
@@ -54,33 +53,5 @@ public class ReceiverEventListener implements SerialPortDataListener {
         } catch (IOException e) {
             System.out.println("Ocurrió un error: " + e.getMessage());
         }
-    }
-
-    private String decodeMessage(byte[] newData) {
-        
-        String frame = new String(newData);
-        
-        
-        char[] characters = frame.toCharArray();
-        List<Character> stuffedMessage = new ArrayList<>();
-        for (int i = 0; i < frame.length(); i++) { 
-            
-            char character = characters[i];
-           
-            if (!(character == ESCAPE && (characters[i+1] == FLAG || characters[i+1] == ESCAPE))) {
-                stuffedMessage.add(character);
-            }
-            
-        }
-        
-        StringBuilder sb = new StringBuilder();
- 
-        for (Character ch : stuffedMessage) {
-            sb.append(ch);
-        }
- 
-        return sb.toString();
-        
-    
     }
 }

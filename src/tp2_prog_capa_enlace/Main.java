@@ -22,7 +22,7 @@ public class Main {
         switch (args[0]) {
             case "tx":
                 System.out.println("Entrando a modo emisión");
-                Host emisor = new Host(SerialPortBuilder.initializePort("COM2", 19200));
+                Host emisor = new Host(SerialPortBuilder.initializePort("COM1", 19200));
                 if (emisor.port.isOpen()) {
                     emisor.EnterTransmissionMode(emisor.port.getOutputStream(), new Scanner(System.in));
                 } else {
@@ -31,7 +31,7 @@ public class Main {
                 break;
             case "rx":
                 System.out.println("Entrando a modo recepción");
-                Host receptor = new Host(SerialPortBuilder.initializePort("COM3", 19200));
+                Host receptor = new Host(SerialPortBuilder.initializePort("COM2", 19200));
                 if (receptor.port.isOpen()) {
                     receptor.EnterReceptionMode();
                 } else {
