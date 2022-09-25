@@ -4,25 +4,21 @@
  */
 package tp2_prog_capa_enlace;
 
-import com.fazecast.jSerialComm.SerialPort;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Scanner;
 
-/**
- *
- * @author marti
- */
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
+        /*
+        Dependiendo si por consola mandamos "tx" o "rx",
+        el programa empieza en modo trasmisor o receptor.
+         */
         switch (args[0]) {
             case "tx":
                 System.out.println("Entrando a modo emisión");
+                //Creamos un host el cual tiene asignado el puerto COM1 y por ahí transmite
                 Host emisor = new Host(SerialPortBuilder.initializePort("COM1", 19200));
+                //Si el puerto esta abierto, transmitimos
                 if (emisor.port.isOpen()) {
                     emisor.EnterTransmissionMode(emisor.port.getOutputStream(), new Scanner(System.in));
                 } else {
@@ -31,7 +27,9 @@ public class Main {
                 break;
             case "rx":
                 System.out.println("Entrando a modo recepción");
+                //Creamos un host el cual tiene asignado el puerto COM2 y por ahí recibe
                 Host receptor = new Host(SerialPortBuilder.initializePort("COM2", 19200));
+                //Si el puerto esta abierto, nos abrimos a la recepción
                 if (receptor.port.isOpen()) {
                     receptor.EnterReceptionMode();
                 } else {

@@ -14,23 +14,32 @@ import java.util.Arrays;
  *
  * @author marti
  */
+//Clase que representa la trama que vamos a enviar o recibir
 public class Frame {
 
+    //Caracter que representa el delimitador
     public static final char FLAG = '~';
+    //Caracter que representa el byte de escape (relleno de bytes)
     public static final char ESCAPE = '/';
+    //Este byte representa el tipo de trama, 0 para datos, 1 para trama ACK
     public byte frameType;
+    //Este byte representa la carga util, encapsula la información de la capa superior
     public byte[] payload;
+    //Este byte se usa para la detección de errores con el método de bit de paridad
     public byte parityBit;
 
     public Frame() {
     }
 
+    //Metodo para armar la trama
     public Frame(String message) {
         this.frameType = '0';
         this.payload = encodeMessage(message);
         this.parityBit = getParityBit();
     }
 
+    //Este metodo procesa un flujo de bytes y lo convierte en una trama como tal
+    //con todos los campos correspondientes
     public static Frame rawDataAsFrame(byte[] rawData) {
         Frame receivedFrame = new Frame();
         byte frameType = rawData[1];
@@ -43,7 +52,9 @@ public class Frame {
         receivedFrame.frameType = frameType;
         return receivedFrame;
     }
-
+    
+    //Este metodo convierte la trama en un flujo de bytes, listo para ser 
+    //transmitido sobre el enlace de comunicación
     public byte[] frameToBytes() throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         output.write(FLAG);
@@ -56,6 +67,7 @@ public class Frame {
         return output.toByteArray();
     }
 
+    //Este método sirve para imprimir por pantalla los campos de la trama
     public void printFrame() {
         System.out.println("Delimitador: " + FLAG);
         System.out.println("Tipo(0 para datos, 1 para ACK): " + (char) frameType);
@@ -66,6 +78,8 @@ public class Frame {
         System.out.println("Delimitador: " + FLAG);
     }
 
+    //Este método sirve para quitar el relleno de bytes del payload
+    //y convertirlo en un mensaje interpretable por la capa superior
     public String decodeMessage() {
         String payloadAsString = new String(this.payload);
         char[] payloadCharacters = payloadAsString.toCharArray();
@@ -83,6 +97,7 @@ public class Frame {
         return sb.toString();
     }
 
+    //Este método determina el bit de paridad de la trama, se usa para detectar errores
     public byte getParityBit() {
         int cantUnos = 0;
         for (int i = 0; i < payload.length; i++) {
@@ -96,6 +111,7 @@ public class Frame {
         }
     }
 
+    //Este método es el encargado de realizar el relleno de bytes con byte bandera
     private byte[] encodeMessage(String message) {
         byte[] messageAsBytes = message.getBytes();
         List<Byte> aux = new ArrayList<>();
@@ -112,6 +128,8 @@ public class Frame {
         return encodedMessage;
     }
 
+    //Este método sirve para convertir un byte en una cadena compuesta de 1s y 0s
+    //Se usa para determinar el bit de paridad
     private String byteToString(byte b) {
         return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
     }

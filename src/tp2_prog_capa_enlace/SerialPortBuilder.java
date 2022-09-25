@@ -12,6 +12,7 @@ import com.fazecast.jSerialComm.SerialPort;
  */
 public class SerialPortBuilder {
     
+    //Metodo usado para inicializar un puerto serie y abrirlo
     public static SerialPort initializePort(String portName, int baudRate){
        SerialPort port = SerialPort.getCommPort(portName);
        port.setBaudRate(baudRate);
