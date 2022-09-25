@@ -7,6 +7,7 @@ package tp2_prog_capa_enlace;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+
 /**
  *
  * @author marti
@@ -30,8 +31,10 @@ public class TransmitterEventListener implements SerialPortDataListener {
     @Override
     public void serialEvent(SerialPortEvent event) {
         byte[] newData = event.getReceivedData();
-        String mensaje = new String(newData);
-        if (mensaje.equalsIgnoreCase("ack")) {
+        Frame receivedFrame = Frame.rawDataAsFrame(newData);
+        System.out.println("Trama recibida: ");
+        receivedFrame.printFrame();
+        if (receivedFrame.frameType == '1') {
             host.blockTransmission.set(false);
         }
     }

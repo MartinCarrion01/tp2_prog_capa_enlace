@@ -8,6 +8,8 @@ import com.fazecast.jSerialComm.SerialPort;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -29,23 +31,42 @@ public class Host {
         while (true) {
             System.out.println("A continuación, tipee un mensaje a enviar");
             String message = scanner.nextLine();
-            Frame frameToSend = new Frame(message);//se realiza entramado 
+            Frame frameToSend = new Frame(message);
             try {
-                outputStream.write(frameToSend.frameToBytes());
-                blockTransmission.set(true);
-                System.out.println("Trama enviada: ");
-                frameToSend.printFrame();
-                System.out.println("Esperando ack...");
-                while (true) {
-                    if (!blockTransmission.get()) {
-                        System.out.println("ack recibido");
+                final AtomicBoolean exitFlag = new AtomicBoolean(false);
+                do {
+                    exitFlag.set(false);
+                    outputStream.write(frameToSend.frameToBytes());
+                    blockTransmission.set(true);
+                    System.out.println("Trama enviada: ");
+                    frameToSend.printFrame();
+                    System.out.println("Esperando ack...");
+                    Timer timer = new Timer();
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            System.out.println("Expiró temporizador, volviendo a transmitir...");
+                            exitFlag.set(true);
+                        }
+                    };
+                    timer.schedule(task, 3000);
+                    while (true) {
+                        if (!blockTransmission.get()) {
+                            exitFlag.set(false);
+                            timer.cancel();
+                            timer.purge();
+                            System.out.println("ack recibido");
+                            break;
+                        }
+                        if (exitFlag.get()) {
+                            break;
+                        }
+                    }
+                    if (new String(frameToSend.payload).equalsIgnoreCase("exit")) {
+                        port.closePort();
                         break;
                     }
-                }
-                if (new String(frameToSend.payload).equalsIgnoreCase("exit")) {
-                    port.closePort();
-                    break;
-                }
+                } while (exitFlag.get());
             } catch (IOException e) {
                 System.out.println("Ocurrió un error: " + e.getMessage());
             }

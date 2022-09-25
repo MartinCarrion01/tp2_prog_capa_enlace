@@ -9,10 +9,6 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import static tp2_prog_capa_enlace.Frame.ESCAPE;
-import static tp2_prog_capa_enlace.Frame.FLAG;
 
 /**
  *
@@ -37,19 +33,26 @@ public class ReceiverEventListener implements SerialPortDataListener {
         Frame receivedFrame = Frame.rawDataAsFrame(newData);
         System.out.println("Trama recibida: ");
         receivedFrame.printFrame();
-        String decodedMessage = receivedFrame.decodeMessage();
-        System.out.println("Mensaje recibido: " + decodedMessage);
-        this.sendAck();
-        if (decodedMessage.equalsIgnoreCase("exit")) {
-            System.out.println("El emisor ha terminado la comunicacion, cerrando...");
-            port.closePort();
+        byte parityBit = receivedFrame.getParityBit();
+        if (parityBit == receivedFrame.parityBit) {
+            String decodedMessage = receivedFrame.decodeMessage();
+            System.out.println("Mensaje recibido: " + decodedMessage);
+            sendAck();
+            if (decodedMessage.equalsIgnoreCase("exit")) {
+                System.out.println("El emisor ha terminado la comunicacion, cerrando...");
+                port.closePort();
+            }
+        } else {
+            System.out.println("Ocurrió en un error en la transmisión del mensaje, solicitando retrasmisión...");
         }
     }
 
     private void sendAck() {
         OutputStream outputStream = this.port.getOutputStream();
         try {
-            outputStream.write("ack".getBytes());
+            Frame ackFrame = new Frame();
+            ackFrame.frameType = '1';
+            outputStream.write(ackFrame.frameToBytes());
         } catch (IOException e) {
             System.out.println("Ocurrió un error: " + e.getMessage());
         }
